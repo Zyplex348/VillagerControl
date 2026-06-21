@@ -1,0 +1,25 @@
+# =========================================================
+# VillagerControl configuration
+# =========================================================
+#
+# After changing any value here, run /villagercontrol reload
+# (or restart the server) for it to take effect.
+
+# Master switch for villagers, wandering traders, and trader llamas.
+# If set to false:
+#   - They cannot spawn naturally.
+#   - They cannot be spawned with /summon or spawn eggs.
+#   - Zombie villagers will NOT be able to be cured back into villagers.
+# If you set this to true while it was previously false, existing spawn
+# attempts will work again, but it will NOT remove villagers that already
+# exist in the world (none should exist if this was false the whole time).
+villagers:
+  enabled: true
+
+# Whether trading is allowed for villagers and wandering traders.
+# This only matters if villagers.enabled is true above — there is no point
+# disabling trades for entities that cannot exist in the first place.
+# If set to false, the trade menu will simply not open when a player
+# right-clicks a villager or wandering trader.
+trades:
+  enabled: true

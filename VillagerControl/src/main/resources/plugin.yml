@@ -1,0 +1,12 @@
+name: VillagerControl
+version: '1.0.0'
+main: dev.lucas.villagercontrol.VillagerControl
+api-version: '1.21'
+author: Lucas
+description: Permite deshabilitar aldeanos, aldeanos errantes (Wandering Traders) y/o sus tradeos.
+
+commands:
+  villagercontrol:
+    description: Comando principal de VillagerControl
+    usage: /villagercontrol <reload|status>
+    aliases: [vc]
