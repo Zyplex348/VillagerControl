@@ -3,20 +3,19 @@ package dev.lucas.villagercontrol.listeners;
 import dev.lucas.villagercontrol.config.ConfigValues;
 import org.bukkit.entity.AbstractVillager;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.WanderingTrader;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 /**
- * Cuando trades.enabled = false en config.yml, evita que se abra el menú de
- * comercio tanto de aldeanos normales como de Wandering Traders.
- *
- * Se cancela en dos puntos por seguridad:
- *  1) Al hacer clic derecho sobre el aldeano/errante (evita incluso la animación de apertura).
- *  2) Al abrirse efectivamente un inventario de tipo MERCHANT (red de seguridad
- *     por si algo más intenta abrir el comercio sin pasar por el clic, por ejemplo otro plugin).
+ * Blocks trading with villagers and wandering traders based on config.
+ * Cancelled at two points: on right-click interaction AND on inventory open,
+ * as a safety net against other plugins forcing the menu open.
  */
 public class TradeListener implements Listener {
 
@@ -26,20 +25,53 @@ public class TradeListener implements Listener {
         this.config = config;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteract(PlayerInteractEntityEvent event) {
-        if (config.tradesEnabled()) return;
-        if (event.getRightClicked() instanceof AbstractVillager) {
-            event.setCancelled(true);
+        if (!(event.getRightClicked() instanceof AbstractVillager trader)) return;
+
+        String worldName = trader.getWorld().getName();
+        Player player = event.getPlayer();
+
+        if (trader instanceof Villager) {
+            if (!config.villagersEnabled()) return;           // doesn't exist, no point blocking trade
+            if (config.villagerTradesEnabled()) return;
+            if (config.villagerExcludedWorlds().contains(worldName)) return;
+        } else if (trader instanceof WanderingTrader) {
+            if (!config.wanderingTraderEnabled()) return;
+            if (config.wanderingTraderTradesEnabled()) return;
+            if (config.wanderingTraderExcludedWorlds().contains(worldName)) return;
+        }
+
+        event.setCancelled(true);
+        if (!config.msgTradeBlocked().isEmpty()) {
+            player.sendMessage(config.msgTradeBlocked());
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
-        if (config.tradesEnabled()) return;
-        if (event.getInventory().getType() == InventoryType.MERCHANT
-                && event.getPlayer() instanceof Player) {
-            event.setCancelled(true);
+        if (event.getInventory().getType() != InventoryType.MERCHANT) return;
+        if (!(event.getPlayer() instanceof Player player)) return;
+
+        // Check the holder to determine type
+        var holder = event.getInventory().getHolder();
+        if (!(holder instanceof AbstractVillager trader)) return;
+
+        String worldName = trader.getWorld().getName();
+
+        if (trader instanceof Villager) {
+            if (!config.villagersEnabled()) return;
+            if (config.villagerTradesEnabled()) return;
+            if (config.villagerExcludedWorlds().contains(worldName)) return;
+        } else if (trader instanceof WanderingTrader) {
+            if (!config.wanderingTraderEnabled()) return;
+            if (config.wanderingTraderTradesEnabled()) return;
+            if (config.wanderingTraderExcludedWorlds().contains(worldName)) return;
+        }
+
+        event.setCancelled(true);
+        if (!config.msgTradeBlocked().isEmpty()) {
+            player.sendMessage(config.msgTradeBlocked());
         }
     }
 }

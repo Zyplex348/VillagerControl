@@ -1,0 +1,6 @@
+/workspaces/VillagerControl/VillagerControl/src/main/java/dev/lucas/villagercontrol/VillagerControl.java
+/workspaces/VillagerControl/VillagerControl/src/main/java/dev/lucas/villagercontrol/commands/VillagerControlCommand.java
+/workspaces/VillagerControl/VillagerControl/src/main/java/dev/lucas/villagercontrol/config/ConfigValues.java
+/workspaces/VillagerControl/VillagerControl/src/main/java/dev/lucas/villagercontrol/listeners/ProfessionListener.java
+/workspaces/VillagerControl/VillagerControl/src/main/java/dev/lucas/villagercontrol/listeners/TradeListener.java
+/workspaces/VillagerControl/VillagerControl/src/main/java/dev/lucas/villagercontrol/listeners/VillagerSpawnListener.java

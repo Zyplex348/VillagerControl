@@ -1,0 +1,7 @@
+dev/lucas/villagercontrol/commands/VillagerControlCommand.class
+dev/lucas/villagercontrol/listeners/VillagerSpawnListener$1.class
+dev/lucas/villagercontrol/VillagerControl.class
+dev/lucas/villagercontrol/listeners/TradeListener.class
+dev/lucas/villagercontrol/listeners/ProfessionListener.class
+dev/lucas/villagercontrol/config/ConfigValues.class
+dev/lucas/villagercontrol/listeners/VillagerSpawnListener.class
