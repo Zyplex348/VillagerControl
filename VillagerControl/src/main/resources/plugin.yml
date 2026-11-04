@@ -1,10 +1,10 @@
 name: VillagerControl
-version: '2.0.0'
+version: '2.1.0'
 main: dev.lucas.villagercontrol.VillagerControl
-api-version: '1.21'
+api-version: '26.1'
 author: Lucas
-description: Highly configurable villager, wandering trader and trader llama control plugin for Paper 1.21.11.
-
+description: Highly configurable villager, wandering trader and trader llama control plugin for Paper 26.1.x.
+ 
 commands:
   villagercontrol:
     description: Main VillagerControl command
