@@ -1,6 +1,6 @@
 # 🗺️ VillagerControl
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Version](https://img.shields.io/badge/version-2.1.1-blue)
 ![Paper](https://img.shields.io/badge/Paper-26.1.2-green)
 ![Java](https://img.shields.io/badge/Java-25-orange)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
@@ -37,7 +37,7 @@ Villagers are great, until they aren't. Maybe they lag your server, maybe they b
 
 | Plugin version | Minecraft / Paper | Java | Where |
 |---|---|---|---|
-| **2.1.0** (latest) | 26.1.x | 25 | [`main` branch](https://github.com/Zyplex348/VillagerControl) |
+| **2.1.1** (latest) | 26.1.x | 25 | [`main` branch](https://github.com/Zyplex348/VillagerControl) |
 | 2.0.1 | 1.21.11 | 21 | [`1.21.11` branch](https://github.com/Zyplex348/VillagerControl/tree/1.21.11) |
 
 Still on 1.21.11 or Java 21? Stick with 2.0.1. Version 2.1.0 won't load there.
@@ -86,7 +86,7 @@ trader-llama:
 messages:
   trade-blocked: "&cTrading is disabled on this server."
   zombie-cure-blocked: "&cZombie villager curing is disabled here."
-  profession-blocked: "&cA villager with that profession is not allowed here."
+  spawn-blocked: "&cThat mob is disabled on this server."
 ```
 
 **Professions you can use:**
@@ -110,6 +110,11 @@ Both commands are for server operators only.
 ---
 
 ## 🆕 What's new
+
+### 2.1.1
+- `/vc status` now shows profession names instead of a wall of internal data.
+- No more chat messages during normal gameplay when a villager can't take a job. The "mob disabled" message now only appears when someone uses `/summon` or a spawn egg.
+- `config.yml` is fully in English, and its comments now explain how the profession filter works.
 
 ### 2.1.0
 - Now runs on Paper 26.1.2 with Java 25.
