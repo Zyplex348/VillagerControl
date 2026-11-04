@@ -47,7 +47,7 @@ public class VillagerControlCommand implements CommandExecutor {
         }
         sender.sendMessage("  trades: " + flag(config.villagerTradesEnabled()));
         sender.sendMessage("  profession mode: " + ChatColor.AQUA + config.villagerProfessionMode());
-        sender.sendMessage("  profession list: " + ChatColor.AQUA + config.villagerProfessionList());
+        sender.sendMessage("  profession list: " + ChatColor.AQUA + professionNames());
         sender.sendMessage("  excluded worlds: " + ChatColor.AQUA + config.villagerExcludedWorlds());
 
         sender.sendMessage(ChatColor.YELLOW + "Wandering Traders:");
@@ -66,6 +66,13 @@ public class VillagerControlCommand implements CommandExecutor {
             sender.sendMessage("  block summoned: " + flag(config.traderLlamaBlockSummoned()));
         }
         sender.sendMessage("  excluded worlds: " + ChatColor.AQUA + config.traderLlamaExcludedWorlds());
+    }
+
+    /** Readable profession list, e.g. "[LIBRARIAN, NITWIT]" instead of the internal object dump. */
+    private String professionNames() {
+        return config.villagerProfessionNames().isEmpty()
+                ? "(none)"
+                : String.join(", ", config.villagerProfessionNames());
     }
 
     private String flag(boolean value) {
