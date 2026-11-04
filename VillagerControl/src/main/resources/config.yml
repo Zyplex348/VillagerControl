@@ -1,13 +1,13 @@
 # =========================================================
 # VillagerControl - Configuration
-# Compatible with Paper 1.21.1 (1.21.11)
+# Compatible with Paper 26.1.x
 # =========================================================
 # After any change, run: /vc reload
 # Color codes supported in messages: &a &c &e &b &d &r etc.
 # =========================================================
 
 # -----------------------------------------------
-# VILLAGERS (normal villagers)
+# VILLAGERS
 # -----------------------------------------------
 villagers:
   enabled: true   # Master switch. If false, applies spawn-control rules below.
@@ -24,12 +24,14 @@ villagers:
   trades:
     enabled: true
 
-  # Profession filter — only works when villagers.enabled is true.
-  # mode: blacklist -> listed professions are FORBIDDEN (villager removed when it gets that profession)
-  # mode: whitelist -> ONLY listed professions are ALLOWED (all others are removed)
-  # Valid professions: NONE, NITWIT, ARMORER, BUTCHER, CARTOGRAPHER, CLERIC,
-  #   FARMER, FISHERMAN, FLETCHER, LEATHERWORKER, LIBRARIAN, MASON,
-  #   SHEPHERD, TOOLSMITH, WEAPONSMITH
+  # Profession filter - only works when villagers.enabled is true.
+  # It runs when a villager tries to take a job at a workstation.
+  # A forbidden profession is simply not taken: the villager stays unemployed.
+  # mode: blacklist -> listed professions are FORBIDDEN
+  # mode: whitelist -> ONLY listed professions are ALLOWED (all others are forbidden)
+  # Valid professions: ARMORER, BUTCHER, CARTOGRAPHER, CLERIC, FARMER, FISHERMAN,
+  #   FLETCHER, LEATHERWORKER, LIBRARIAN, MASON, SHEPHERD, TOOLSMITH, WEAPONSMITH
+  # (NONE and NITWIT are accepted but have no effect, they are never taken at a workstation.)
   professions:
     mode: blacklist
     list:
@@ -42,7 +44,7 @@ villagers:
     - world_the_end
 
 # -----------------------------------------------
-# WANDERING TRADERS (aldeanos errantes)
+# WANDERING TRADERS
 # -----------------------------------------------
 wandering-trader:
   enabled: true
@@ -58,7 +60,7 @@ wandering-trader:
     - world_the_end
 
 # -----------------------------------------------
-# TRADER LLAMAS (llamas del errante)
+# TRADER LLAMAS
 # -----------------------------------------------
 trader-llama:
   enabled: true
@@ -78,4 +80,6 @@ trader-llama:
 messages:
   trade-blocked: "&cTrading is disabled on this server."
   zombie-cure-blocked: "&cZombie villager curing is disabled here."
-  profession-blocked: "&cA villager with that profession is not allowed here."
+  # Shown to nearby players only when a blocked mob is spawned with
+  # /summon or a spawn egg. Natural spawns are blocked silently.
+  spawn-blocked: "&cThat mob is disabled on this server."
