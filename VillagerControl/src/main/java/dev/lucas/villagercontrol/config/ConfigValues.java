@@ -6,8 +6,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Villager;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Central configuration reader for VillagerControl.
@@ -25,6 +25,8 @@ public class ConfigValues {
     private boolean villagerTradesEnabled;
     private String  villagerProfessionMode;   // "blacklist" or "whitelist"
     private final Set<Villager.Profession> villagerProfessionList = new HashSet<>();
+    // Plain profession names (e.g. "LIBRARIAN"), only used to display the list nicely.
+    private final Set<String> villagerProfessionNames = new TreeSet<>();
     private final Set<String> villagerExcludedWorlds = new HashSet<>();
 
     // --- Wandering Traders ---
@@ -43,7 +45,7 @@ public class ConfigValues {
     // --- Messages ---
     private String msgTradeBlocked;
     private String msgZombieCureBlocked;
-    private String msgProfessionBlocked;
+    private String msgSpawnBlocked;
 
     public ConfigValues(VillagerControl plugin) {
         this.plugin = plugin;
@@ -63,9 +65,11 @@ public class ConfigValues {
         villagerProfessionMode      = cfg.getString("villagers.professions.mode", "blacklist").toLowerCase();
 
         villagerProfessionList.clear();
+        villagerProfessionNames.clear();
         for (String name : cfg.getStringList("villagers.professions.list")) {
             try {
                 villagerProfessionList.add(Villager.Profession.valueOf(name.toUpperCase()));
+                villagerProfessionNames.add(name.toUpperCase());
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().warning("Invalid profession in config: " + name);
             }
@@ -94,7 +98,7 @@ public class ConfigValues {
         // --- Messages ---
         msgTradeBlocked         = color(cfg.getString("messages.trade-blocked", ""));
         msgZombieCureBlocked    = color(cfg.getString("messages.zombie-cure-blocked", ""));
-        msgProfessionBlocked    = color(cfg.getString("messages.profession-blocked", ""));
+        msgSpawnBlocked         = color(cfg.getString("messages.spawn-blocked", "&cThat mob is disabled on this server."));
     }
 
     private String color(String s) {
@@ -110,6 +114,7 @@ public class ConfigValues {
     public boolean villagerTradesEnabled()      { return villagerTradesEnabled; }
     public String  villagerProfessionMode()     { return villagerProfessionMode; }
     public Set<Villager.Profession> villagerProfessionList() { return villagerProfessionList; }
+    public Set<String> villagerProfessionNames() { return villagerProfessionNames; }
     public Set<String> villagerExcludedWorlds() { return villagerExcludedWorlds; }
 
     // ---- Wandering Traders ----
@@ -128,5 +133,6 @@ public class ConfigValues {
     // ---- Messages ----
     public String msgTradeBlocked()         { return msgTradeBlocked; }
     public String msgZombieCureBlocked()    { return msgZombieCureBlocked; }
-    public String msgProfessionBlocked()    { return msgProfessionBlocked; }
+    public String msgSpawnBlocked()         { return msgSpawnBlocked; }
 }
+
