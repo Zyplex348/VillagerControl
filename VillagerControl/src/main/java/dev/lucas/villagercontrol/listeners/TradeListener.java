@@ -9,8 +9,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.MerchantInventory;
 
 /**
  * Blocks trading with villagers and wandering traders based on config.
@@ -28,48 +29,49 @@ public class TradeListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteract(PlayerInteractEntityEvent event) {
         if (!(event.getRightClicked() instanceof AbstractVillager trader)) return;
+        if (!isTradeBlocked(trader)) return;
 
-        String worldName = trader.getWorld().getName();
-        Player player = event.getPlayer();
-
-        if (trader instanceof Villager) {
-            if (!config.villagersEnabled()) return;           // doesn't exist, no point blocking trade
-            if (config.villagerTradesEnabled()) return;
-            if (config.villagerExcludedWorlds().contains(worldName)) return;
-        } else if (trader instanceof WanderingTrader) {
-            if (!config.wanderingTraderEnabled()) return;
-            if (config.wanderingTraderTradesEnabled()) return;
-            if (config.wanderingTraderExcludedWorlds().contains(worldName)) return;
-        }
-
+        // Cancel for both hands, but only send the message once (main hand).
         event.setCancelled(true);
-        if (!config.msgTradeBlocked().isEmpty()) {
-            player.sendMessage(config.msgTradeBlocked());
+        if (event.getHand() == EquipmentSlot.HAND) {
+            sendBlockedMessage(event.getPlayer());
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
-        if (event.getInventory().getType() != InventoryType.MERCHANT) return;
+        if (!(event.getInventory() instanceof MerchantInventory merchantInventory)) return;
         if (!(event.getPlayer() instanceof Player player)) return;
+        if (!(merchantInventory.getMerchant() instanceof AbstractVillager trader)) return;
+        if (!isTradeBlocked(trader)) return;
 
-        // Check the holder to determine type
-        var holder = event.getInventory().getHolder();
-        if (!(holder instanceof AbstractVillager trader)) return;
+        event.setCancelled(true);
+        sendBlockedMessage(player);
+    }
 
+    /**
+     * True if trading with this entity must be blocked according to the config.
+     * Unknown AbstractVillager types (other plugins' custom traders) are never blocked.
+     */
+    private boolean isTradeBlocked(AbstractVillager trader) {
         String worldName = trader.getWorld().getName();
 
         if (trader instanceof Villager) {
-            if (!config.villagersEnabled()) return;
-            if (config.villagerTradesEnabled()) return;
-            if (config.villagerExcludedWorlds().contains(worldName)) return;
-        } else if (trader instanceof WanderingTrader) {
-            if (!config.wanderingTraderEnabled()) return;
-            if (config.wanderingTraderTradesEnabled()) return;
-            if (config.wanderingTraderExcludedWorlds().contains(worldName)) return;
+            if (!config.villagersEnabled()) return false;        // doesn't exist, no point blocking trade
+            if (config.villagerTradesEnabled()) return false;
+            return !config.villagerExcludedWorlds().contains(worldName);
         }
 
-        event.setCancelled(true);
+        if (trader instanceof WanderingTrader) {
+            if (!config.wanderingTraderEnabled()) return false;
+            if (config.wanderingTraderTradesEnabled()) return false;
+            return !config.wanderingTraderExcludedWorlds().contains(worldName);
+        }
+
+        return false;
+    }
+
+    private void sendBlockedMessage(Player player) {
         if (!config.msgTradeBlocked().isEmpty()) {
             player.sendMessage(config.msgTradeBlocked());
         }
