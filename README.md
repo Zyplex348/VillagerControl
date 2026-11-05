@@ -1,13 +1,13 @@
 # 🗺️ VillagerControl
 
-![Version](https://img.shields.io/badge/version-2.1.1-blue)
-![Paper](https://img.shields.io/badge/Paper-26.1.2-green)
+![Version](https://img.shields.io/badge/version-2.2.0-blue)
+![Platforms](https://img.shields.io/badge/Paper%20%7C%20Spigot%20%7C%20Folia-26.1.x-green)
 ![Java](https://img.shields.io/badge/Java-25-orange)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 Villagers are great, until they aren't. Maybe they lag your server, maybe they break your economy, or maybe you simply want a world without them.
 
-**VillagerControl** is a small Paper plugin that lets you decide what happens with villagers, wandering traders and trader llamas. Everything lives in one `config.yml`, and you can change it while the server is running.
+**VillagerControl** is a small plugin for Paper, Spigot, Folia and other Bukkit-based servers that lets you decide what happens with villagers, wandering traders and trader llamas. Everything lives in one `config.yml`, and you can change it while the server is running.
 
 ---
 
@@ -37,10 +37,25 @@ Villagers are great, until they aren't. Maybe they lag your server, maybe they b
 
 | Plugin version | Minecraft / Paper | Java | Where |
 |---|---|---|---|
-| **2.1.1** (latest) | 26.1.x | 25 | [`main` branch](https://github.com/Zyplex348/VillagerControl) |
+| **2.2.0** (latest) | 26.1.x | 25 | [`main` branch](https://github.com/Zyplex348/VillagerControl) |
 | 2.0.1 | 1.21.11 | 21 | [`1.21.11` branch](https://github.com/Zyplex348/VillagerControl/tree/1.21.11) |
 
 Still on 1.21.11 or Java 21? Stick with 2.0.1. Version 2.1.0 won't load there.
+
+---
+
+## 🖥️ Supported platforms
+
+One single `.jar` for all of them (Minecraft 26.1.x, Java 25):
+
+| Platform | Status |
+|---|---|
+| Paper | ✅ Tested |
+| Purpur and other Paper forks | Should work (built on Paper) |
+| Spigot / Bukkit | Built against the Spigot API, not tested yet |
+| Folia | Marked as Folia-supported, not tested yet |
+
+If you try it on a platform that isn't marked as tested, please [tell me how it went](https://github.com/Zyplex348/VillagerControl/issues).
 
 ---
 
@@ -110,6 +125,10 @@ Both commands are for server operators only.
 ---
 
 ## 🆕 What's new
+
+### 2.2.0
+- One jar for Paper, Spigot, Bukkit, Folia and Purpur (built against the Spigot API instead of the Paper API).
+- Marked as Folia-supported, and the config reload is now safe to run alongside other threads.
 
 ### 2.1.1
 - `/vc status` now shows profession names instead of a wall of internal data.
