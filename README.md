@@ -51,9 +51,9 @@ One single `.jar` for all of them (Minecraft 26.1.x, Java 25):
 | Platform | Status |
 |---|---|
 | Paper | ✅ Tested |
-| Purpur and other Paper forks | Should work (built on Paper) |
-| Spigot / Bukkit | Built against the Spigot API, not tested yet |
-| Folia | Marked as Folia-supported, not tested yet |
+| Purpur and other Paper forks | ✅ Tested |
+| Spigot / Bukkit | ✅ Tested |
+| Folia | Not tested yet ❌ |
 
 If you try it on a platform that isn't marked as tested, please [tell me how it went](https://github.com/Zyplex348/VillagerControl/issues).
 
@@ -67,9 +67,9 @@ The config is generated the first time the plugin runs. Here's the idea of it:
 villagers:
   enabled: true                  # Set to false to start blocking villagers
   spawn-control:                 # These only matter when enabled is false
-    natural: true                # Block villages and natural spawns
-    summoned: true               # Block /summon and spawn eggs
-    zombie-cure: true            # Block curing zombie villagers
+    natural: true                # Block villages and natural spawns (If is false, villagers can spawn natural if "Enabled: false")
+    summoned: true               # Block /summon and spawn eggs (If is false, villagers can spawn if "Enabled: false")
+    zombie-cure: true            # Block curing zombie villagers (If is false, villagers can be cure if "Enabled: false")
   trades:
     enabled: true                # Set to false to stop trading
   professions:
