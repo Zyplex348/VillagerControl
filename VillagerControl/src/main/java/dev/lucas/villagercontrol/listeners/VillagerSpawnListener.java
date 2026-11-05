@@ -20,6 +20,8 @@ import java.util.Set;
  *
  * Players are only told about a blocked spawn when it was caused by a
  * /summon command or a spawn egg. Natural spawns are blocked silently.
+ *
+ * Only uses Bukkit/Spigot API calls, so it runs on Spigot, Paper, Purpur and Folia.
  */
 public class VillagerSpawnListener implements Listener {
 
@@ -95,10 +97,14 @@ public class VillagerSpawnListener implements Listener {
                 || reason == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG;
     }
 
+    /** getNearbyEntities exists on every platform (getNearbyPlayers is Paper-only). */
     private void notifyNearbyPlayers(Location location, String message) {
         if (message.isEmpty() || location.getWorld() == null) return;
-        for (Player player : location.getWorld().getNearbyPlayers(location, NOTIFY_RADIUS)) {
-            player.sendMessage(message);
+        for (Entity nearby : location.getWorld().getNearbyEntities(
+                location, NOTIFY_RADIUS, NOTIFY_RADIUS, NOTIFY_RADIUS)) {
+            if (nearby instanceof Player player) {
+                player.sendMessage(message);
+            }
         }
     }
 }
