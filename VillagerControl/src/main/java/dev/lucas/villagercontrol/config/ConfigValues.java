@@ -5,6 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Villager;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -12,40 +14,45 @@ import java.util.TreeSet;
 /**
  * Central configuration reader for VillagerControl.
  * Call reload() to re-read config.yml without restarting.
+ *
+ * Thread safety (needed on Folia, where several threads run at the same time):
+ * every field is volatile and every set is immutable. reload() builds the new
+ * values first and only then swaps them in, so other threads never see a set
+ * that is half empty or being modified.
  */
 public class ConfigValues {
 
     private final VillagerControl plugin;
 
     // --- Villagers ---
-    private boolean villagersEnabled;
-    private boolean villagerBlockNatural;
-    private boolean villagerBlockSummoned;
-    private boolean villagerBlockZombieCure;
-    private boolean villagerTradesEnabled;
-    private String  villagerProfessionMode;   // "blacklist" or "whitelist"
-    private final Set<Villager.Profession> villagerProfessionList = new HashSet<>();
+    private volatile boolean villagersEnabled;
+    private volatile boolean villagerBlockNatural;
+    private volatile boolean villagerBlockSummoned;
+    private volatile boolean villagerBlockZombieCure;
+    private volatile boolean villagerTradesEnabled;
+    private volatile String  villagerProfessionMode = "blacklist";   // "blacklist" or "whitelist"
+    private volatile Set<Villager.Profession> villagerProfessionList = Set.of();
     // Plain profession names (e.g. "LIBRARIAN"), only used to display the list nicely.
-    private final Set<String> villagerProfessionNames = new TreeSet<>();
-    private final Set<String> villagerExcludedWorlds = new HashSet<>();
+    private volatile Set<String> villagerProfessionNames = Set.of();
+    private volatile Set<String> villagerExcludedWorlds = Set.of();
 
     // --- Wandering Traders ---
-    private boolean wanderingTraderEnabled;
-    private boolean wanderingTraderBlockNatural;
-    private boolean wanderingTraderBlockSummoned;
-    private boolean wanderingTraderTradesEnabled;
-    private final Set<String> wanderingTraderExcludedWorlds = new HashSet<>();
+    private volatile boolean wanderingTraderEnabled;
+    private volatile boolean wanderingTraderBlockNatural;
+    private volatile boolean wanderingTraderBlockSummoned;
+    private volatile boolean wanderingTraderTradesEnabled;
+    private volatile Set<String> wanderingTraderExcludedWorlds = Set.of();
 
     // --- Trader Llamas ---
-    private boolean traderLlamaEnabled;
-    private boolean traderLlamaBlockNatural;
-    private boolean traderLlamaBlockSummoned;
-    private final Set<String> traderLlamaExcludedWorlds = new HashSet<>();
+    private volatile boolean traderLlamaEnabled;
+    private volatile boolean traderLlamaBlockNatural;
+    private volatile boolean traderLlamaBlockSummoned;
+    private volatile Set<String> traderLlamaExcludedWorlds = Set.of();
 
     // --- Messages ---
-    private String msgTradeBlocked;
-    private String msgZombieCureBlocked;
-    private String msgSpawnBlocked;
+    private volatile String msgTradeBlocked = "";
+    private volatile String msgZombieCureBlocked = "";
+    private volatile String msgSpawnBlocked = "";
 
     public ConfigValues(VillagerControl plugin) {
         this.plugin = plugin;
@@ -64,41 +71,41 @@ public class ConfigValues {
         villagerTradesEnabled       = cfg.getBoolean("villagers.trades.enabled", true);
         villagerProfessionMode      = cfg.getString("villagers.professions.mode", "blacklist").toLowerCase();
 
-        villagerProfessionList.clear();
-        villagerProfessionNames.clear();
+        Set<Villager.Profession> professions = new HashSet<>();
+        Set<String> professionNames = new TreeSet<>();
         for (String name : cfg.getStringList("villagers.professions.list")) {
             try {
-                villagerProfessionList.add(Villager.Profession.valueOf(name.toUpperCase()));
-                villagerProfessionNames.add(name.toUpperCase());
+                professions.add(Villager.Profession.valueOf(name.toUpperCase()));
+                professionNames.add(name.toUpperCase());
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().warning("Invalid profession in config: " + name);
             }
         }
-
-        villagerExcludedWorlds.clear();
-        villagerExcludedWorlds.addAll(cfg.getStringList("villagers.excluded-worlds"));
+        villagerProfessionList = Collections.unmodifiableSet(professions);
+        villagerProfessionNames = Collections.unmodifiableSet(professionNames);
+        villagerExcludedWorlds = immutableCopy(cfg.getStringList("villagers.excluded-worlds"));
 
         // --- Wandering Traders ---
         wanderingTraderEnabled          = cfg.getBoolean("wandering-trader.enabled", true);
         wanderingTraderBlockNatural     = cfg.getBoolean("wandering-trader.spawn-control.natural", true);
         wanderingTraderBlockSummoned    = cfg.getBoolean("wandering-trader.spawn-control.summoned", true);
         wanderingTraderTradesEnabled    = cfg.getBoolean("wandering-trader.trades.enabled", true);
-
-        wanderingTraderExcludedWorlds.clear();
-        wanderingTraderExcludedWorlds.addAll(cfg.getStringList("wandering-trader.excluded-worlds"));
+        wanderingTraderExcludedWorlds   = immutableCopy(cfg.getStringList("wandering-trader.excluded-worlds"));
 
         // --- Trader Llamas ---
         traderLlamaEnabled          = cfg.getBoolean("trader-llama.enabled", true);
         traderLlamaBlockNatural     = cfg.getBoolean("trader-llama.spawn-control.natural", true);
         traderLlamaBlockSummoned    = cfg.getBoolean("trader-llama.spawn-control.summoned", true);
-
-        traderLlamaExcludedWorlds.clear();
-        traderLlamaExcludedWorlds.addAll(cfg.getStringList("trader-llama.excluded-worlds"));
+        traderLlamaExcludedWorlds   = immutableCopy(cfg.getStringList("trader-llama.excluded-worlds"));
 
         // --- Messages ---
         msgTradeBlocked         = color(cfg.getString("messages.trade-blocked", ""));
         msgZombieCureBlocked    = color(cfg.getString("messages.zombie-cure-blocked", ""));
         msgSpawnBlocked         = color(cfg.getString("messages.spawn-blocked", "&cThat mob is disabled on this server."));
+    }
+
+    private static Set<String> immutableCopy(Collection<String> values) {
+        return Collections.unmodifiableSet(new HashSet<>(values));
     }
 
     private String color(String s) {
@@ -135,4 +142,3 @@ public class ConfigValues {
     public String msgZombieCureBlocked()    { return msgZombieCureBlocked; }
     public String msgSpawnBlocked()         { return msgSpawnBlocked; }
 }
-
