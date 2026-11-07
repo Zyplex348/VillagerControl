@@ -21,7 +21,9 @@ import java.util.Set;
  * Players are only told about a blocked spawn when it was caused by a
  * /summon command or a spawn egg. Natural spawns are blocked silently.
  *
- * Only uses Bukkit/Spigot API calls, so it runs on Spigot, Paper, Purpur and Folia.
+ * Only uses Bukkit/Spigot API calls that exist from 1.20.5 to 26.1.x, so it
+ * runs on Spigot, Paper, Purpur and Folia. Entity types are compared with ==
+ * instead of a switch, to stay safe if EntityType changes shape in a future version.
  */
 public class VillagerSpawnListener implements Listener {
 
@@ -35,22 +37,26 @@ public class VillagerSpawnListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCreatureSpawn(CreatureSpawnEvent event) {
-        Entity entity = event.getEntity();
+        EntityType type = event.getEntity().getType();
         String worldName = event.getLocation().getWorld().getName();
         CreatureSpawnEvent.SpawnReason reason = event.getSpawnReason();
 
-        boolean block = switch (entity.getType()) {
-            case VILLAGER -> shouldBlock(
+        boolean block;
+        if (type == EntityType.VILLAGER) {
+            block = shouldBlock(
                     config.villagersEnabled(), config.villagerExcludedWorlds(), worldName, reason,
                     config.villagerBlockNatural(), config.villagerBlockSummoned());
-            case WANDERING_TRADER -> shouldBlock(
+        } else if (type == EntityType.WANDERING_TRADER) {
+            block = shouldBlock(
                     config.wanderingTraderEnabled(), config.wanderingTraderExcludedWorlds(), worldName, reason,
                     config.wanderingTraderBlockNatural(), config.wanderingTraderBlockSummoned());
-            case TRADER_LLAMA -> shouldBlock(
+        } else if (type == EntityType.TRADER_LLAMA) {
+            block = shouldBlock(
                     config.traderLlamaEnabled(), config.traderLlamaExcludedWorlds(), worldName, reason,
                     config.traderLlamaBlockNatural(), config.traderLlamaBlockSummoned());
-            default -> false;
-        };
+        } else {
+            return;
+        }
 
         if (!block) return;
 
