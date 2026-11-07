@@ -73,13 +73,15 @@ public class ConfigValues {
 
         Set<Villager.Profession> professions = new HashSet<>();
         Set<String> professionNames = new TreeSet<>();
-        for (String name : cfg.getStringList("villagers.professions.list")) {
-            try {
-                professions.add(Villager.Profession.valueOf(name.toUpperCase()));
-                professionNames.add(name.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                plugin.getLogger().warning("Invalid profession in config: " + name);
+        for (String raw : cfg.getStringList("villagers.professions.list")) {
+            String name = raw.trim().toUpperCase();
+            Villager.Profession profession = professionByName(name);
+            if (profession == null) {
+                plugin.getLogger().warning("Invalid profession in config: " + raw);
+                continue;
             }
+            professions.add(profession);
+            professionNames.add(name);
         }
         villagerProfessionList = Collections.unmodifiableSet(professions);
         villagerProfessionNames = Collections.unmodifiableSet(professionNames);
@@ -102,6 +104,33 @@ public class ConfigValues {
         msgTradeBlocked         = color(cfg.getString("messages.trade-blocked", ""));
         msgZombieCureBlocked    = color(cfg.getString("messages.zombie-cure-blocked", ""));
         msgSpawnBlocked         = color(cfg.getString("messages.spawn-blocked", "&cThat mob is disabled on this server."));
+    }
+
+    /**
+     * Looks up a profession by name WITHOUT calling Villager.Profession.valueOf().
+     * Villager.Profession is an enum on older servers and an interface on newer ones,
+     * and a jar compiled against one form fails with IncompatibleClassChangeError if it
+     * calls a static method of the other. Reading the constants (getstatic) works on both.
+     */
+    private static Villager.Profession professionByName(String name) {
+        return switch (name) {
+            case "NONE"          -> Villager.Profession.NONE;
+            case "NITWIT"        -> Villager.Profession.NITWIT;
+            case "ARMORER"       -> Villager.Profession.ARMORER;
+            case "BUTCHER"       -> Villager.Profession.BUTCHER;
+            case "CARTOGRAPHER"  -> Villager.Profession.CARTOGRAPHER;
+            case "CLERIC"        -> Villager.Profession.CLERIC;
+            case "FARMER"        -> Villager.Profession.FARMER;
+            case "FISHERMAN"     -> Villager.Profession.FISHERMAN;
+            case "FLETCHER"      -> Villager.Profession.FLETCHER;
+            case "LEATHERWORKER" -> Villager.Profession.LEATHERWORKER;
+            case "LIBRARIAN"     -> Villager.Profession.LIBRARIAN;
+            case "MASON"         -> Villager.Profession.MASON;
+            case "SHEPHERD"      -> Villager.Profession.SHEPHERD;
+            case "TOOLSMITH"     -> Villager.Profession.TOOLSMITH;
+            case "WEAPONSMITH"   -> Villager.Profession.WEAPONSMITH;
+            default              -> null;
+        };
     }
 
     private static Set<String> immutableCopy(Collection<String> values) {
