@@ -6,11 +6,12 @@
 
     <groupId>dev.lucas</groupId>
     <artifactId>VillagerControl</artifactId>
-    <version>2.2.0</version>
+    <version>2.3.0</version>
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.release>25</maven.compiler.release>
+        <!-- Java 21 bytecode runs on every server from 1.20.5 (Java 21) up to 26.1.x (Java 25). -->
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -23,13 +24,14 @@
 
     <dependencies>
         <!--
-            Compiled against the Spigot API (the common base of Spigot, Paper, Purpur,
-            Folia and Bukkit-based servers) so a single jar runs on all of them.
+            Compiled against the OLDEST supported API (Spigot 1.20.5) so the code can't
+            accidentally use anything newer. Spigot, Paper, Purpur, Folia and other
+            Bukkit-based servers all provide this API, so one jar runs on all of them.
         -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>26.1-R0.1-SNAPSHOT</version>
+            <version>1.20.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
