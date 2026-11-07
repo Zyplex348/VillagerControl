@@ -22,7 +22,7 @@ public class VillagerControl extends JavaPlugin {
 
         getCommand("villagercontrol").setExecutor(new VillagerControlCommand(configValues));
 
-        getLogger().info("VillagerControl v2.0 enabled.");
+        getLogger().info("VillagerControl enabled.");
         getLogger().info("Villagers: " + configValues.villagersEnabled()
                 + " | Wandering Traders: " + configValues.wanderingTraderEnabled()
                 + " | Trader Llamas: " + configValues.traderLlamaEnabled());
