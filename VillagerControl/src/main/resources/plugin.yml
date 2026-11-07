@@ -1,10 +1,10 @@
 name: VillagerControl
-version: '2.2.0'
+version: '2.3.0'
 main: dev.lucas.villagercontrol.VillagerControl
-api-version: '26.1'
+api-version: '1.20'
 folia-supported: true
 author: Lucas
-description: Highly configurable villager, wandering trader and trader llama control plugin for Paper, Spigot, Folia and other Bukkit-based servers (26.1.x).
+description: Highly configurable villager, wandering trader and trader llama control plugin for Paper, Spigot, Folia and other Bukkit-based servers (1.20.5 - 26.1.x).
 
 commands:
   villagercontrol:
